@@ -1,0 +1,39 @@
+---
+
+- hosts: all
+  become: true
+  tasks:
+
+  - name: update repo index
+    dnf:
+      update_cache: yes
+
+  - name: install httpd package
+    dnf:
+      name: httpd
+      state: latest
+
+  - name: add httpd SSL module
+    dnf:
+      name: mod_ssl
+
+  - name: Enable service httpd and ensure it is not masked
+    systemd:
+      name: httpd
+      enabled: true
+      masked: no
+
+  - name: Add port 80 to firewall
+    firewalld:
+      port: 80/tcp
+      state: enabled
+      immediate: true
+      permanent: true
+
+  - name: Add port 443 to firewall
+    firewalld:
+      port: 443/tcp
+      state: enabled
+      immediate: true
+      permanent: true
+
